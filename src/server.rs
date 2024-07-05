@@ -29,6 +29,9 @@ impl Server {
     pub fn start(&mut self) {
         let listener = TcpListener::bind(&self.address).unwrap();
         println!("Server listening on {}", self.address);
+        // TODO: implement averaging on full buffer from the back by folding messages until space is free
+        // TODO: implement batching for the dead letter queue
+        // TODO: deploy on google cloud vps
         loop {
             match listener.accept() {
                 Ok((mut stream, _addr)) => {
@@ -94,7 +97,7 @@ impl Server {
 }
 
 fn main() {
-    let adress = "127.0.0.1:16000".to_string();
+    let adress = "0.0.0.0:8080".to_string();
     let window_size = 5;
     let mut server = Server::new(adress, window_size);
     server.start()

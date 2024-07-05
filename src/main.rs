@@ -11,7 +11,7 @@ fn main() {
     let (sender, receiver) = std::sync::mpsc::channel();
     let _sensor = Sensor::new(1, Duration::from_secs(5));
 
-    let mut client = Client::new("127.0.0.1:16000".to_string());
+    let mut client = Client::new("".to_string());
 
     let sensor_ids = vec![1, 2, 3];
     let mut sensor_threads = vec![];
