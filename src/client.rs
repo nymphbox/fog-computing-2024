@@ -1,33 +1,24 @@
 use crate::types::Message;
 
-use std::collections::VecDeque;
 use std::io::{BufReader, Write};
 use std::net::TcpStream;
-use std::sync::mpsc::Receiver;
+use std::sync::mpsc::{Receiver, Sender};
 use std::time::Duration;
 
 pub struct Client {
     address: String,
-    buffer: VecDeque<Message>,
-    sequence_number: u64,
 }
 
 impl Client {
     pub fn new(address: String) -> Client {
         Client {
-            address,
-            buffer: VecDeque::new(),
-            sequence_number: 0,
+            address
         }
     }
-    pub fn start(&mut self, receiver: &Receiver<Message>) {
+    pub fn start(&mut self, send_rx: &Receiver<Message>, confirm_tx: &Sender<bool>) {
         println!("Client: Starting...");
         loop {
-            let mut message = receiver.recv().unwrap();
-            message.sequence_number = self.sequence_number;
-            self.sequence_number += 1;
-            println!("Client: Adding {:?} to queue", message);
-            self.buffer.push_back(message);
+            let message = send_rx.recv().unwrap();
 
             let mut stream = match TcpStream::connect(&self.address) {
                 Ok(stream) => {
@@ -37,23 +28,23 @@ impl Client {
                     stream
                 }
                 Err(e) => {
+                    _ = confirm_tx.send(false);
                     println!("Client: Failed to connect to server: {}", e);
                     continue;
                 }
             };
-            let message = self.buffer.pop_front().unwrap();
             let serialized_message = bincode::serialize(&message).unwrap();
             match stream.write_all(&serialized_message) {
                 Ok(_) => {
                     println!("Client: Sent {:?} to server", message);
+                    _ = confirm_tx.send(true);
                 }
                 Err(e) => {
                     println!(
                         "Client: Failed to send message {:?}to server: {}",
                         message, e
                     );
-                    println!("Client: Adding message {:?} to queue", message);
-                    self.buffer.push_back(message);
+                    _ = confirm_tx.send(false);
                 }
             }
             let mut reader = BufReader::new(stream);
