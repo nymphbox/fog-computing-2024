@@ -92,7 +92,11 @@ impl Server {
                 count += 1;
             }
         }
-        if count > 0 { sum / count } else { 0 }
+        if count > 0 {
+            sum / count
+        } else {
+            0
+        }
     }
 }
 
