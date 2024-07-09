@@ -47,11 +47,8 @@ impl Client {
             }
             let mut reader = BufReader::new(stream);
             let result: Result<Message, _> = bincode::deserialize_from(&mut reader);
-            match result {
-                Ok(received_message) => {
+            if let Ok(received_message) = result {
                     println!("Client: Received {:?} from server", received_message);
-                }
-                _ => {}
             }
         }
     }
