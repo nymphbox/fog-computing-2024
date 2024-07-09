@@ -1,11 +1,11 @@
+mod buffer;
 mod client;
 mod sensor;
 mod types;
-mod buffer;
 
-use buffer::Buffer;
 use crate::client::Client;
 use crate::sensor::Sensor;
+use buffer::Buffer;
 use std::time::Duration;
 use std::{env, thread};
 
@@ -19,7 +19,6 @@ fn main() {
 
     let _sensor = Sensor::new(1, Duration::from_secs(5));
 
-    
     let (buffer_tx, buffer_rx) = std::sync::mpsc::channel();
     let (send_tx, send_rx) = std::sync::mpsc::channel();
     let (confirm_tx, confirm_rx) = std::sync::mpsc::channel();

@@ -11,9 +11,7 @@ pub struct Client {
 
 impl Client {
     pub fn new(address: String) -> Client {
-        Client {
-            address
-        }
+        Client { address }
     }
     pub fn start(&mut self, send_rx: &Receiver<Message>, confirm_tx: &Sender<bool>) {
         println!("Client: Starting...");
