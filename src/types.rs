@@ -2,10 +2,11 @@ use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+#[allow(dead_code)]
 pub trait Mergeable {
     fn merge(&self, other: &Self) -> Self;
 }
-
+#[allow(dead_code)]
 pub trait Sequenced {
     fn set_sequence_number(&mut self, new_sequence_number: u64);
 }
