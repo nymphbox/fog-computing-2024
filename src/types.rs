@@ -1,6 +1,6 @@
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{fmt, slice::Iter};
 
 #[allow(dead_code)]
 pub trait Mergeable {
@@ -17,6 +17,13 @@ pub enum SensorType {
     Humidity,
     CO2,
 }
+impl SensorType {
+    pub fn iterator() -> Iter<'static, SensorType> {
+        static TYPES: [SensorType; 3] = [SensorType::Temperature, SensorType::Humidity, SensorType::CO2];
+        TYPES.iter()
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq)]
 pub struct SensorMessage {
