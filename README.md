@@ -11,14 +11,14 @@ We specifically deal with the fog computing challenges of unreliable communicati
 and resource constraints. We also provide an example implementation of an offloading strategy of compute-heavy tasks 
 into the cloud.
 
-## Sensors
+## Sensors and client-side buffer
 Our application consists of two binaries.
 The [client](src/main.rs) binary launches three threads which simulate sensor activity. 
 Sensor logic is implemented in [sensor.rs](src/sensor.rs). Each sensor will generate random values depending on its sensor type,
 and will produce an invalid value with a probability also depending on its type. These values are sent to the client-side [buffer](src/buffer.rs)
-via a Rust MPSC channel, which is an efficient intra-thread communication mechanism. The buffer
+via a Rust MPSC channel, which is an efficient thread communication mechanism. The buffer
 has a fixed capacity of messages in accordance with a limited resource edge environment. Once the buffer is full, 
-it will start to average sensor values across sensor types to make space for new messages. It will reflect this
+it will start to average the oldest sensor values across sensor types to make space for new messages. It will reflect this
 with a sampling count, indicating how often a sensor value has been sampled. Sensor values are then read 
 from the buffer again via a Rust channel and processed by the client.
 

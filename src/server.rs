@@ -84,12 +84,12 @@ impl Server {
                             }
                         }
                         Err(e) => {
-                            println!("Failed to read from socket: {}", e);
+                            println!("Server: Failed to read from socket: {}", e);
                         }
                     }
                 }
                 Err(e) => {
-                    println!("Failed to accept connection: {}", e);
+                    println!("Server: Failed to accept connection: {}", e);
                 }
             }
         }
@@ -106,7 +106,7 @@ impl Server {
 }
 
 fn main() {
-    let adress = "0.0.0.0:8080".to_string();
-    let mut server = Server::new(adress);
+    let address = "0.0.0.0:8080".to_string();
+    let mut server = Server::new(address);
     server.start()
 }

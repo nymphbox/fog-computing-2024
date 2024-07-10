@@ -8,7 +8,6 @@ pub struct Buffer {
     buffer: VecDeque<SensorMessage>,
     size_limit: usize,
     timeout: Duration,
-    sequence_number: u64,
 }
 
 impl Buffer {
@@ -19,7 +18,6 @@ impl Buffer {
             buffer: VecDeque::new(),
             size_limit,
             timeout,
-            sequence_number: 0,
         }
     }
 
@@ -31,10 +29,8 @@ impl Buffer {
     ) {
         loop {
             match buffer_rx.recv_timeout(self.timeout) {
-                Ok(mut element) => {
+                Ok(element) => {
                     println!("Client: Adding {:?} to queue", element);
-                    element.set_sequence_number(self.sequence_number);
-                    self.sequence_number += 1;
                     self.buffer.push_back(element);
 
                     if self.buffer.len() >= self.size_limit {

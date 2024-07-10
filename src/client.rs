@@ -7,16 +7,17 @@ use std::time::Duration;
 
 pub struct Client {
     address: String,
+    sequence_number: u64,
 }
 
 impl Client {
     pub fn new(address: String) -> Client {
-        Client { address }
+        Client { address , sequence_number: 0}
     }
     pub fn start(&mut self, send_rx: &Receiver<SensorMessage>, confirm_tx: &Sender<bool>) {
         println!("Client: Starting...");
         loop {
-            let message = send_rx.recv().unwrap();
+            let mut message = send_rx.recv().unwrap();
             let valid_sensor_range = self.sensor_value_range(message.sensor_type);
             if message.content < valid_sensor_range.0 as i64
                 || message.content > valid_sensor_range.1 as i64
@@ -42,6 +43,8 @@ impl Client {
                     continue;
                 }
             };
+            message.sequence_number = self.sequence_number;
+            self.sequence_number += 1;
             let serialized_message = bincode::serialize(&message).unwrap();
             match stream.write_all(&serialized_message) {
                 Ok(_) => {

@@ -50,7 +50,7 @@ impl Sensor {
                 .as_micros();
             let message = SensorMessage::new(0, value, timestamp, self.sensor_type);
             sender.send(message).unwrap();
-            println!("Sensor {}: Pushed value: {}", self.id, value);
+            println!("{:?}: Pushed value: {}", self.sensor_type,  value);
             sleep(self.interval);
         }
     }

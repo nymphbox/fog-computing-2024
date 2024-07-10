@@ -67,7 +67,7 @@ impl Mergeable for SensorMessage {
             + (other.content * other.sample_count as i64))
             / (self.sample_count as i64 + other.sample_count as i64);
         SensorMessage {
-            sequence_number: other.sequence_number,
+            sequence_number: self.sequence_number,
             timestamp: other.timestamp,
             content: merged_content,
             sample_count: self.sample_count + other.sample_count,
