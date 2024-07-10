@@ -1,6 +1,12 @@
 # Fog-Computing-2024 Prototyping Assignment
 Code and documentation for Fog Computing 2024 @ TU Berlin 
 
+# Start
+Make sure Rust is installed on your system
+
+run `cargo run --release --bin client 127.0.0.1:8080`
+run `cargo run --release --bin server`
+
 # Documentation 
 
 Our application is a simplified version of an IOT air quality surveillance system.
