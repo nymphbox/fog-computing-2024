@@ -2,19 +2,16 @@ use std::collections::VecDeque;
 use std::sync::mpsc::{Receiver, RecvTimeoutError, Sender};
 use std::time::Duration;
 
-use crate::types::{Mergeable, Sequenced};
+use crate::types::{Mergeable, SensorMessage, Sequenced};
 
-pub struct Buffer<T> {
-    buffer: VecDeque<T>,
+pub struct Buffer {
+    buffer: VecDeque<SensorMessage>,
     size_limit: usize,
     timeout: Duration,
     sequence_number: u64,
 }
 
-impl<T> Buffer<T>
-where
-    T: Clone + Mergeable + Sequenced + std::fmt::Debug,
-{
+impl Buffer {
     pub fn new(size_limit: usize, timeout: Duration) -> Self {
         // Ensure that the buffer size is at least two for the merge operation
         assert!(size_limit >= 2);
@@ -28,8 +25,8 @@ where
 
     pub fn start(
         &mut self,
-        buffer_rx: &Receiver<T>,
-        send_tx: &Sender<T>,
+        buffer_rx: &Receiver<SensorMessage>,
+        send_tx: &Sender<SensorMessage>,
         confirm_rx: &Receiver<bool>,
     ) {
         loop {
@@ -42,17 +39,31 @@ where
 
                     if self.buffer.len() >= self.size_limit {
                         let oldest_index = 0;
-                        let merged_element =
-                            self.buffer[oldest_index].merge(&self.buffer[oldest_index + 1]);
-                        let old = self
-                            .buffer
-                            .remove(oldest_index)
-                            .expect("Can't remove from an empty buffer");
-                        println!(
-                            "Client: Buffer limit reached: Merged {:?} and {:?} to {:?}",
-                            old, self.buffer[oldest_index], merged_element
-                        );
-                        self.buffer[oldest_index] = merged_element;
+                        let oldest_sensor_type = self.buffer[oldest_index].sensor_type;
+
+                        // Find the next message with the same sensor type
+                        if let Some(next_index) = self.buffer.iter().position(|x| {
+                            x.sensor_type == oldest_sensor_type && self.buffer[oldest_index] != *x
+                        }) {
+                            let merged_element =
+                                self.buffer[oldest_index].merge(&self.buffer[next_index]);
+
+                            // Remove the oldest message
+                            let old = self
+                                .buffer
+                                .remove(oldest_index)
+                                .expect("Can't remove from an empty buffer");
+
+                            // Replace the next message with the merged message
+                            self.buffer[next_index - 1] = merged_element; // Adjust index due to removal
+
+                            println!(
+                                "Client: Buffer limit reached: Merged {:?} and {:?} to {:?}",
+                                old,
+                                self.buffer[next_index - 1],
+                                merged_element
+                            );
+                        }
                     }
                 }
                 Err(RecvTimeoutError::Timeout) => {

@@ -5,6 +5,7 @@ mod types;
 
 use crate::client::Client;
 use crate::sensor::Sensor;
+use crate::types::SensorType;
 use buffer::Buffer;
 use std::time::Duration;
 use std::{env, thread};
@@ -17,21 +18,22 @@ fn main() {
     }
     let address = &args[1];
 
-    let _sensor = Sensor::new(1, Duration::from_secs(5));
-
     let (buffer_tx, buffer_rx) = std::sync::mpsc::channel();
     let (send_tx, send_rx) = std::sync::mpsc::channel();
     let (confirm_tx, confirm_rx) = std::sync::mpsc::channel();
-    let _sensor = Sensor::new(1, Duration::from_secs(1));
 
     let mut client = Client::new(address.to_string());
     let mut buffer = Buffer::new(10, Duration::from_millis(100));
 
-    let sensor_ids = vec![1, 2, 3];
+    let sensor_types = vec![
+        SensorType::Temperature,
+        SensorType::Humidity,
+        SensorType::CO2,
+    ];
     let mut sensor_threads = vec![];
-    for sensor_id in sensor_ids {
+    for (sensor_id, sensor_type) in sensor_types.iter().enumerate() {
         let sender = buffer_tx.clone();
-        let mut sensor = Sensor::new(sensor_id, Duration::from_secs(5));
+        let mut sensor = Sensor::new(sensor_id, Duration::from_secs(5), *sensor_type);
         let sensor_task = thread::spawn(move || {
             sensor.generate_and_push(&sender);
         });
