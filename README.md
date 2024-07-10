@@ -1,5 +1,5 @@
 # Fog-Computing-2024 Prototyping Assignment
-Code and documentation for Fog Computing 2024 @ TU Berlin 
+Code and documentation for Fog Computing 2024
 
 # Start
 Make sure Rust is installed on your system
