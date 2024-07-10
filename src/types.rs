@@ -27,7 +27,7 @@ pub struct SensorMessage {
     pub sample_count: u32,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy)]
 pub struct AirQualityMessage {
     pub sequence_number: u64,
     pub timestamp: u128,

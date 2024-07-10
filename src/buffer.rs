@@ -75,7 +75,7 @@ impl Buffer {
                 }
             }
             if let Some(element) = self.buffer.front() {
-                match send_tx.send(element.clone()) {
+                match send_tx.send(*element) {
                     Ok(_) => {
                         match confirm_rx
                             .recv()

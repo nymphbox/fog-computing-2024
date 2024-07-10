@@ -25,11 +25,9 @@ fn main() {
     let mut client = Client::new(address.to_string());
     let mut buffer = Buffer::new(10, Duration::from_millis(100));
 
-    let sensor_types = vec![
-        SensorType::Temperature,
+    let sensor_types = [SensorType::Temperature,
         SensorType::Humidity,
-        SensorType::CO2,
-    ];
+        SensorType::CO2];
     let mut sensor_threads = vec![];
     for (sensor_id, sensor_type) in sensor_types.iter().enumerate() {
         let sender = buffer_tx.clone();
